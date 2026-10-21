@@ -11,21 +11,18 @@ repository; they are students' work. To recreate the loop, install your own grad
 
 The chain never sees an answer's known grade while grading it. Graded answers enter the blind
 evaluation only as *other* answers' anchors. When you calibrate against an answer that is also
-in your graded folder, pass `--exclude <id>` so it cannot anchor its own run. The actual band is
+among your graded anchors, leave it out of that run's anchor pack so it cannot anchor itself. The actual band is
 revealed only afterwards, to the separate `calibration_analysis` stage.
 
 ## Running a calibration pass
 
-```bash
-# 1. Run the blind chain on a graded answer, excluding it from its own anchor pack
-npm run civpro -- run --exam 2019-final --answer content/graded-answers/2019-h.md \
-  --exclude 2019-h --out runs/cal-2019-h
-
-# 2. Reveal the real band to the post-hoc analyst (optionally with grader comments)
-npm run civpro -- calibrate --run runs/cal-2019-h --actual H [--comments comments.md]
-
-# 3. Read runs/cal-2019-h/feedback.md next to audit.md
-```
+1. Give the model a graded answer whose band you know. Ask for a **calibration run**: stages 1–8
+   blind, with that answer excluded from the anchor pack, and the real band withheld until they
+   finish.
+2. Then have it run stage 9, `calibration_analysis`, from `pack/01-chain.md` with the actual band
+   (and any grader comments) revealed.
+3. Read the final feedback next to the audit: the band, per-criterion coverage, and the judge's
+   findings.
 
 Run the **whole** fixture set at each prompt version, never only the prior failures. Bands are
 ordered DS > H > P > LP; report exact-band rate and mean ordinal distance, but never optimize to
@@ -41,10 +38,9 @@ Rate each run on these questions:
 - **Pedagogy:** Does each priority tell the student what to do differently next time?
 - **Proportionality:** Do the tone and emphasis fit how serious the issue is?
 - **Grounding:** Do the cited source excerpts actually support the associated claim?
-- **Retrieval:** Did query expansion run (`expanded_lexical`, not `lexical_fallback` in `audit.md`)?
-  Are its terms doctrine vocabulary actually present in the course materials rather than invented
-  authority? Do the rerank reasons explain why each selected excerpt matters? Compare
-  `lexical_fallback` runs only with each other.
+- **Retrieval:** Are the stage 4 search terms doctrine vocabulary actually present in the course
+  materials, rather than invented authority? Do the stage 5 reasons explain why each selected
+  excerpt matters to the weighted issues?
 - **Band discrimination:** Does the blind evaluation separate central errors from secondary or bonus
   omissions, use the exam's actual point allocation, and explain both adjacent-band boundaries?
 
@@ -53,7 +49,7 @@ Rate each run on these questions:
 ## Prompt iteration discipline
 
 - Change one meaningful element at a time.
-- Bump `PROMPT_VERSION` in `src/prompts.ts` for every comparison-worthy change. It is stamped into every run's `input.json`.
+- Bump the prompt version at the top of `pack/01-chain.md` for every comparison-worthy change, and note it with each run you keep.
 - Re-run the complete fixture set, not only prior failures.
 - Compare human ratings and written failure categories alongside band distance.
 - Keep the current answer's known grade and grader comments out of its blind prompts.

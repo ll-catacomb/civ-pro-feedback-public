@@ -20,5 +20,5 @@ Not included: graded student final-exam answers and student class notes.
 
 Add a new exam by dropping in `<year>-final.md` and `<year>-greiner-civpro2-model-answer.md`.
 Add a variant by dropping in `<year>-<slug>-final.md` and `<year>-<slug>-model-answer.md`.
-It shows up in `npm run exams` with no code change. Course materials remain the property of
+Then run `python3 tools/build-pack.py` to rebuild `pack/`. Course materials remain the property of
 their authors and are shared for study use; the MIT license covers the code.

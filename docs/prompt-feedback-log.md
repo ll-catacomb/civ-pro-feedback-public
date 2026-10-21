@@ -1,6 +1,6 @@
 # Prompt feedback log
 
-> **Public-repo note.** This log is reproduced from the hosted app's development. Run IDs, fixture names (`2015-p`, `2019-ds`, …) and file paths such as `src/lib/prompts.test.ts` refer to that private repository and its graded fixtures, which are not included here. Reviewer initials are kept; the one grader named in the source has been anonymized.
+> **Public-repo note.** This log is reproduced from the hosted app's development. Run IDs, fixture names (`2015-p`, `2019-ds`, …) and file paths such as `src/lib/prompts.ts` and its tests refer to that private repository (the prompts now live in `pack/01-chain.md`) and its graded fixtures, which are not included here. Reviewer initials are kept; the one grader named in the source has been anonymized.
 
 Reviewer feedback on generated feedback, and what changed in the prompt chain as a
 result. One section per review round. The point is traceability: every prompt rule

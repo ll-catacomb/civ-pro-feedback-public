@@ -1,19 +1,10 @@
 ---
-description: Run the Civ Pro feedback chain on a practice answer (harness mode, or API mode if .env has a key)
-argument-hint: <answer file> [exam id] [question, e.g. "Question 2"] [bullets]
+description: Give course-grounded feedback on a Civ Pro practice answer by running the prompt chain
+argument-hint: <answer file or pasted text> [exam id] [question] [bullets]
 ---
 
-Run the Civil Procedure feedback chain on: $ARGUMENTS
+Give me feedback on: $ARGUMENTS
 
-Follow AGENTS.md exactly.
-
-1. Run `npm install` if `node_modules/` is missing.
-2. Identify the answer file, the exam ID (check `npm run exams`), the scope (whole exam or
-   one question), and the mode (full draft or bullet points). Ask only for what you can't infer.
-3. If `.env` has an `ANTHROPIC_API_KEY` (or an OpenAI-compatible key), use API mode:
-   `npm run feedback -- --exam … --answer …`.
-4. Otherwise use harness mode: `npm run civpro -- new …`. Then, for each stage, run `render`,
-   give the prompt file to a **fresh subagent** (sonnet for fast/work tiers, opus for
-   evaluator/judge) that writes `<stage>.draft.json`, and run `check`. Repeat until the
-   chain completes.
-5. Show me `feedback.md`. Don't show the band unless I ask.
+Follow `pack/00-INSTRUCTIONS.md` exactly, together with the notes in `AGENTS.md`. Run every stage
+in `pack/01-chain.md` as its own subagent, save the stage outputs under `runs/`, and show me only
+the final feedback. Don't show the band unless I ask.
