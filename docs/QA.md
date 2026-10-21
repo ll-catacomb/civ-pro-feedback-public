@@ -1,0 +1,80 @@
+# QA protocol
+
+How the prompts in this repo were tuned, and how to keep tuning them if you remix it.
+
+## What the benchmark can establish
+
+The hosted app was calibrated against a band-stratified set of real graded final-exam answers
+(one each at DS, H, P, LP for the 2015 and 2019 finals). Those answers are **not** in this
+repository; they are students' work. To recreate the loop, install your own graded answers
+(see [`content/graded-answers/README.md`](../content/graded-answers/README.md)).
+
+The chain never sees an answer's known grade while grading it. Graded answers enter the blind
+evaluation only as *other* answers' anchors. When you calibrate against an answer that is also
+in your graded folder, pass `--exclude <id>` so it cannot anchor its own run. The actual band is
+revealed only afterwards, to the separate `calibration_analysis` stage.
+
+## Running a calibration pass
+
+```bash
+# 1. Run the blind chain on a graded answer, excluding it from its own anchor pack
+npm run civpro -- run --exam 2019-final --answer content/graded-answers/2019-h.md \
+  --exclude 2019-h --out runs/cal-2019-h
+
+# 2. Reveal the real band to the post-hoc analyst (optionally with grader comments)
+npm run civpro -- calibrate --run runs/cal-2019-h --actual H [--comments comments.md]
+
+# 3. Read runs/cal-2019-h/feedback.md next to audit.md
+```
+
+Run the **whole** fixture set at each prompt version, never only the prior failures. Bands are
+ordered DS > H > P > LP; report exact-band rate and mean ordinal distance, but never optimize to
+those alone.
+
+## Human review rubric
+
+Rate each run on these questions:
+
+- **Accuracy:** Is every stated rule, application critique, and quotation supported?
+- **Coverage:** Did it identify the highest-value omissions and errors?
+- **Specificity:** Could this feedback only have been written for this answer?
+- **Pedagogy:** Does each priority tell the student what to do differently next time?
+- **Proportionality:** Do the tone and emphasis fit how serious the issue is?
+- **Grounding:** Do the cited source excerpts actually support the associated claim?
+- **Retrieval:** Did query expansion run (`expanded_lexical`, not `lexical_fallback` in `audit.md`)?
+  Are its terms doctrine vocabulary actually present in the course materials rather than invented
+  authority? Do the rerank reasons explain why each selected excerpt matters? Compare
+  `lexical_fallback` runs only with each other.
+- **Band discrimination:** Does the blind evaluation separate central errors from secondary or bonus
+  omissions, use the exam's actual point allocation, and explain both adjacent-band boundaries?
+
+5 = publish as-is · 4 = minor edit · 3 = useful but needs a material edit · 2 = unreliable in important places · 1 = unsafe or fundamentally misdirected.
+
+## Prompt iteration discipline
+
+- Change one meaningful element at a time.
+- Bump `PROMPT_VERSION` in `src/prompts.ts` for every comparison-worthy change. It is stamped into every run's `input.json`.
+- Re-run the complete fixture set, not only prior failures.
+- Compare human ratings and written failure categories alongside band distance.
+- Keep the current answer's known grade and grader comments out of its blind prompts.
+- Log each review round in [`prompt-feedback-log.md`](prompt-feedback-log.md). Record what the reviewer saw, what you verified in the stored run, what you changed, and what you deliberately did *not* change. Every prompt rule should trace back to an observed defect.
+
+## Lessons already paid for
+
+These are in the prompts for a reason; read the log before removing one.
+
+- **Conservatism belongs in deterministic code, never in prompts.** One version stacked "DS is rare"
+  base-rate language, an in-prompt hedge-down instruction, and a lower-band tie rule. Every answer,
+  including a DS, collapsed to P. The evaluator prompt now explicitly says scarcity in a real
+  cohort is not a quota (step 3a).
+- **Every later stage subtracted accuracy.** A stage-level audit found the blind evaluators were the
+  most accurate components. Separate band-calibration stages, cross-judges, and confidence tie-breaks
+  all made banding worse. That is why the band now comes straight from `blind_evaluation`.
+- **The coach must not see the anchors.** `feedback_draft` gets the evaluation, not the exam, the model
+  answer, or the graded references, so band comparisons can't leak into student-facing prose.
+- **Same-exam anchors beat other years.** A different cohort's curve doesn't transfer. Another year's
+  answer fills a band only when the same-exam stack is thin. When it is the *sole* reference for a
+  band, it must be treated as a full comparator, or that band becomes unreachable.
+- **Reviewer feedback was overwhelmingly about prose, not doctrine.** Most of the drafting rules in
+  the coach and judge prompts came from it. Examples: one idea per sentence, no coined terms of art,
+  enumerate every multi-element test, pair every addition with a cut, and organize by exam question.

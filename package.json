@@ -1,0 +1,27 @@
+{
+  "name": "civ-pro-feedback-public",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A course-grounded Civil Procedure practice-exam feedback chain you can run from Claude Code, Codex, or your own API key.",
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "scripts": {
+    "civpro": "tsx src/cli.ts",
+    "exams": "tsx src/cli.ts exams",
+    "feedback": "tsx src/cli.ts run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.111.0",
+    "gray-matter": "^4.0.3",
+    "tsx": "^4.20.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22",
+    "typescript": "^5"
+  }
+}

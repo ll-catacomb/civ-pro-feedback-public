@@ -1,0 +1,14 @@
+node_modules/
+.env
+.env.*
+!.env.example
+.DS_Store
+*.tsbuildinfo
+
+# Runs contain your own answers; keep them local.
+/runs/*
+!/runs/.gitkeep
+
+# Graded answers are other students' work; never commit them.
+/content/graded-answers/*
+!/content/graded-answers/README.md
